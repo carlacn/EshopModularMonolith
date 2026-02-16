@@ -1,6 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Catalog.Infrastructure;
+using Catalog.Infrastructure.Seed;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Shared.Infrastructure;
+using Shared.Infrastructure.Interceptors;
+using Shared.Infrastructure.Seed;
 
 namespace Catalog
 {
@@ -12,6 +19,23 @@ namespace Catalog
             //api endpoint services
             //application use case services
             //infrastructure services
+
+            var connectionString = configuration.GetConnectionString("eshopdb");
+
+            services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+            services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+
+            services.AddDbContext<CatalogDbContext>((serviceProvider, options) =>
+            {
+                options.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());
+                options.UseNpgsql(connectionString, npgsqlOptions =>
+                {
+                    npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "catalog");
+                });
+            });
+
+            services.AddScoped<IDataSeeder, CatalogDataSeeder>();
+
             return services; 
         }
 
@@ -21,7 +45,12 @@ namespace Catalog
             //api endpoint services
             //application use case services
             //infrastructure services
+
+            if (app.Environment.IsDevelopment())
+                app.UseMigration<CatalogDbContext>();
+
             return app;
         }
+
     }
 }

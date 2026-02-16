@@ -20,15 +20,10 @@ namespace Shared.Messaging
                 config.AddSagas(assemblies);
                 config.AddActivities(assemblies);
 
-                //config.UsingRabbitMq((context, configurator) =>
-                //{
-                //    configurator.Host(new Uri(configuration["MessageBroker:Host"]!), host =>
-                //    {
-                //        host.Username(configuration["MessageBroker:UserName"]!);
-                //        host.Password(configuration["MessageBroker:Password"]!);
-                //    });
-                //    configurator.ConfigureEndpoints(context);
-                //});
+                config.UsingInMemory((context, busConfiguration) =>
+                {
+                    busConfiguration.ConfigureEndpoints(context);
+                });
             });
 
             return services;

@@ -1,3 +1,4 @@
+using Shared.CQRS;
 using Shared.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +10,11 @@ var basketAssembly = typeof(BasketModule).Assembly;
 builder.AddServiceDefaults();
 
 builder.Services
+    .AddMediatRWithAssemblies(catalogAssembly)
     .AddMassTransitWithAssemblies(builder.Configuration, catalogAssembly);
+
+builder.Services
+    .AddHttpContextAccessor();
 
 builder.Services
     .AddCatalogModule(builder.Configuration)
