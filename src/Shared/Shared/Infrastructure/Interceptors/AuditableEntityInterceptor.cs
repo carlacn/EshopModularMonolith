@@ -36,8 +36,8 @@ public class AuditableEntityInterceptor(IHttpContextAccessor httpContextAccesor)
 
             if (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
             {
-                entry.Entity.CreatedBy = GetUserEmail() ?? "system";
-                entry.Entity.CreatedAt = DateTime.UtcNow;
+                entry.Entity.LastModifiedBy = GetUserEmail() ?? "system";
+                entry.Entity.LastModified = DateTime.UtcNow;
             }
         }
     }
