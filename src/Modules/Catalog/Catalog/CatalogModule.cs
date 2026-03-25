@@ -1,6 +1,4 @@
-﻿using Catalog.Infrastructure;
-using Catalog.Infrastructure.Seed;
-using Microsoft.AspNetCore.Builder;
+﻿using Catalog.Infrastructure.Seed;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

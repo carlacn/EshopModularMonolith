@@ -1,0 +1,37 @@
+﻿using Basket.Basket.Exceptions;
+
+namespace Basket.Basket.Features.RemoveItemFromBasket;
+
+public record RemoveItemFromBasketCommand(string UserName, Guid ProductId) : ICommand<RemoveItemFromBasketResult>;
+
+public record RemoveItemFromBasketResult(Guid Id);
+
+public class RemoveItemFromBasketCommandValidator : AbstractValidator<RemoveItemFromBasketCommand>
+{
+    public RemoveItemFromBasketCommandValidator()
+    {
+        RuleFor(x => x.UserName)
+            .NotEmpty()
+            .WithMessage("UserName is required");
+
+        RuleFor(x => x.ProductId)
+            .NotEmpty()
+            .WithMessage("ProductId is required");
+    }
+}
+
+public class RemoveItemFromBasketHandlerr(BasketDbContext basketDbContext) : ICommandHandler<RemoveItemFromBasketCommand, RemoveItemFromBasketResult>
+{
+    public async Task<RemoveItemFromBasketResult> Handle(RemoveItemFromBasketCommand command, CancellationToken cancellationToken)
+    {
+        var shoppingCart = await basketDbContext.ShoppingCarts
+        .Include(x => x.Items)
+        .FirstOrDefaultAsync(x => x.UserName == command.UserName, cancellationToken) ?? throw new ShoppingCartNotFoundException(command.UserName);
+
+        shoppingCart.RemoveItem(command.ProductId);
+
+        await basketDbContext.SaveChangesAsync(cancellationToken);
+
+        return new RemoveItemFromBasketResult(shoppingCart.Id);
+    }
+}

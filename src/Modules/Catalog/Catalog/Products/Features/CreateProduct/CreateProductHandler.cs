@@ -1,8 +1,21 @@
-﻿namespace Catalog.Products.Features.CreateProduct;
+﻿using FluentValidation;
+
+namespace Catalog.Products.Features.CreateProduct;
 
 public record CreateProductCommand(ProductDto ProductDto) : ICommand<CreateProductResult>;
 
 public record CreateProductResult(Guid Id);
+
+public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand> 
+{
+    public CreateProductCommandValidator() 
+    {
+        RuleFor(x => x.ProductDto.Name).NotEmpty().WithMessage("Name is required");
+        RuleFor(x => x.ProductDto.Category).NotEmpty().WithMessage("Category is required");
+        RuleFor(x => x.ProductDto.ImageFile).NotEmpty().WithMessage("Iamge File is required");
+        RuleFor(x => x.ProductDto.Price).GreaterThan(0).WithMessage("Price must be greater than 0");
+    }
+}
 
 public class CreateProductHandler(CatalogDbContext catalogDbContext) : ICommandHandler<CreateProductCommand, CreateProductResult>
 {

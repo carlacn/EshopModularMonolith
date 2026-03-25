@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using Shared.Behaviors;
 using System.Reflection;
 
 namespace Shared.CQRS;
@@ -9,8 +11,12 @@ public static class MediatRExtensions
     {
         services.AddMediatR(config =>
         {
-            config.RegisterServicesFromAssemblies(assemblies);            
+            config.RegisterServicesFromAssemblies(assemblies);
+            config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            config.AddOpenBehavior(typeof(LoggingBehavior<,>));
         });
+
+        services.AddValidatorsFromAssemblies(assemblies);
 
         return services;
     }

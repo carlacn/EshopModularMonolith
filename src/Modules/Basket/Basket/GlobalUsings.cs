@@ -1,1 +1,13 @@
-﻿
+﻿global using Basket.Basket.Models;
+global using Microsoft.EntityFrameworkCore;
+global using System.Reflection;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Basket.Basket.Dtos;
+global using Basket.Infrastructure;
+global using FluentValidation;
+global using Shared.CQRS;
+global using Carter;
+global using MediatR;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Routing;
